@@ -1,0 +1,96 @@
+# when PowerShell on Windows is not configured to use the correct version of the TLS/SSL protocol to establish a secure connection for win2016
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# download python file
+Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.10.0/python-3.10.0-amd64.exe -OutFile python-3.10.0-amd64.exe
+
+# start installation of app
+Start-Process -FilePath "python-3.10.0-amd64.exe" -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1" -Wait
+
+# Install OpenSSH Server on win2019 by running the following PowerShell command:
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+# Start and Enable the SSH Service:
+Start-Service sshd
+Set-Service -Name sshd -StartupType 'Automatic'
+
+
+# Allow SSH through Windows Firewall:
+New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+
+# Verify that the SSH service is running:
+Get-Service -Name sshd
+
+
+###### PowerShell commands (AWS specific but you can adjust to your own requirements):
+
+# Enable PowerShell remoting
+Enable-PSRemoting -Force
+
+# Set WinRM service startup type to automatic
+Set-Service WinRM -StartupType 'Automatic'
+
+# Configure WinRM Service
+Set-Item -Path WSMan:\localhost\Service\Auth\Certificate -Value $true
+Set-Item -Path 'WSMan:\localhost\Service\AllowUnencrypted' -Value $true
+Set-Item -Path 'WSMan:\localhost\Service\Auth\Basic' -Value $true
+Set-Item -Path 'WSMan:\localhost\Service\Auth\CredSSP' -Value $true
+
+# Create a self-signed certificate and set up an HTTPS listener
+# us this one if IMDSv2 is active
+$token = Invoke-RestMethod -Uri http://169.254.169.254/latest/api/token -Method PUT -Headers @{'X-aws-ec2-metadata-token-ttl-seconds'='21600'}
+$hostname = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/public-hostname -Headers @{'X-aws-ec2-metadata-token'=$token}
+$cert = New-SelfSignedCertificate -DnsName $hostname -CertStoreLocation "cert:\LocalMachine\My"
+
+winrm delete winrm/config/Listener?Address=*+Transport=HTTPS
+
+winrm create winrm/config/Listener?Address=*+Transport=HTTPS "@{Hostname=`"$($hostname)`";CertificateThumbprint=`"$($cert.Thumbprint)`"}"
+
+# old method
+$cert = New-SelfSignedCertificate -DnsName $(Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/public-hostname) -CertStoreLocation "cert:\LocalMachine\My"
+winrm create winrm/config/Listener?Address=*+Transport=HTTPS "@{Hostname=`"$(Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/public-hostname)`";CertificateThumbprint=`"$($cert.Thumbprint)`"}"
+
+# Create a firewall rule to allow WinRM HTTPS inbound
+New-NetFirewallRule -DisplayName "Allow WinRM HTTPS" -Direction Inbound -LocalPort 5986 -Protocol TCP -Action Allow
+
+# Configure TrustedHosts // hosts approved
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value "*" -Force
+
+# Set LocalAccountTokenFilterPolicy
+New-ItemProperty -Name LocalAccountTokenFilterPolicy -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -PropertyType DWord -Value 1 -Force
+
+# Set Execution Policy to Unrestricted
+Set-ExecutionPolicy Unrestricted -Force
+
+# Restart the WinRM service
+Restart-Service WinRM
+
+# List the WinRM listeners
+winrm enumerate winrm/config/Listener
+
+
+# Now test the connection
+telnet ip address 5986
+
+
+###### INSTALL ANSIBLE ON UBUNTU ############
+sudo apt update -y
+sudo apt install python3-pip -y
+sudp apt install python3-venv -y
+# sudo apt install ansible -y
+mkdir venv-ansible
+cd venv-ansible
+python3 -m venv ansible2
+source ansible2/bin/activate
+pip install ansible
+pip install pywinrm
+
+
+
+
+
+
+
+
+
+

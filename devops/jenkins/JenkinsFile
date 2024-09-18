@@ -1,0 +1,109 @@
+pipeline{
+    agent any
+
+    environment{
+        GITHUB_REPO_URL = 'https://github.com/geofLegrand/automate_mail.git'
+        CREDENTIAL_ID = 'github_pr'
+        CONFIG_YML_FILE = 'config.yaml'
+        YAML_FILE_FIELD = "label"
+        YAML_FILE_FIELD_VALUE = "DEMO"
+        ARTIFACTORY_URL ="http://ec2-54-86-17-252.compute-1.amazonaws.com:8081/artifactory"
+        JF_REPO = 'SALERS'
+
+        
+    }
+
+    stages{
+
+        stage("Clean Workspace"){
+            steps{
+                cleanWs()
+            }
+        }
+        stage("git checkout"){
+            steps{
+                script{
+                    //  echo "========executing A========"
+                     checkout([$class: 'GitSCM', branches: [[name: '*/dev'],[name: '*/release'],[name: '*/main']],
+                      doGenerateSubmoduleConfigurations: false,
+                        extensions: [[$class: 'LocalBranch']],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: GITHUB_REPO_URL, credentialsId: CREDENTIAL_ID]]])
+                    
+                }
+               
+            }
+    
+        }
+        stage("Install Dependencies"){
+            steps{
+                sh 'pip install PyYAML'
+            }
+            
+        }
+        stage("Execute on Dev Branch"){
+            when{
+                expression {
+                    GIT_BRANCH = 'origin/' + sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+                    return (GIT_BRANCH == 'origin/dev')
+                 
+                }
+            }
+
+            steps{
+
+                    sh "python3 devops/jenkins/modif_para.py '${CONFIG_YML_FILE}' '${YAML_FILE_FIELD}' 'DEV'"
+            }
+        }
+        stage("Execute On Main Branch"){
+                when{
+                    expression {
+                        GIT_BRANCH = 'origin/' + sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+                        return (GIT_BRANCH == 'origin/main') 
+                    
+                    }
+                }
+                steps{
+
+                        sh "python3 devops/modif_para.py '${CONFIG_YML_FILE}' '${YAML_FILE_FIELD}' 'PROD' "
+            
+                    
+                }
+        }
+        stage("Zip the project"){
+
+            steps{
+                sh " zip -r project.zip ./* -x devops/*"
+                
+            }
+
+        }
+        stage("Upload the artifact"){
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'jfg_token', \
+                usernameVariable: 'JFROG_USER', passwordVariable: 'JFROG_PASSWORD')]){
+
+                    sh '''
+                            curl -u ${JFROG_USER}:${JFROG_PASSWORD} \
+                                -T project.zip \
+                                ${ARTIFACTORY_URL}/${JF_REPO}/project_${BUILD_ID}.zip
+                        '''
+ 
+                }
+        
+            }
+            
+        }
+        stage("Ansible "){
+            steps{
+                sh '''
+                    cd devops/ansible
+                    ansible -i inventory.ini -m  win_ping
+                
+                '''
+            }
+        }
+
+    }
+   
+}

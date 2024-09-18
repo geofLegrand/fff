@@ -1,0 +1,367 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+import time
+from selenium.webdriver.common.keys import Keys
+from datetime import date
+
+
+
+
+
+# Initilaliser le web driver
+
+#path = "C:\Program Files (x86)\chromedriver\chromedriver.exe"
+#s = Service(path)
+#DRIVER = webdriver.Chrome(service=s)
+
+#print()
+options = Options()
+options.add_argument("start-maximized")
+
+DRIVER = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+#DRIVER.get("https://www.google.com")
+DRIVER.implicitly_wait(10)
+CHARGEMENT_FINI = False
+
+def acces_au_rapport(url,_max,thetype):
+    if _max == 1:
+        DRIVER.maximize_window()
+    else :
+        DRIVER.minimize_window()
+
+    DRIVER.get(str(url))
+
+    time.sleep(2) # Attendre 2 s
+    """
+    DRIVER.find_element(By.ID,"ReportViewer1_ctl04_ctl05").click()
+
+    DRIVER.find_element(By.ID,"ReportViewer1_ctl04_ctl05_divDropDown_ctl00").click()
+
+    DRIVER.find_element(By.ID,"ReportViewer1_ctl04_ctl05_divDropDown_ctl28").click()
+
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl05_divDropDown_ctl25").click()
+
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl13_txtValue").send_keys('01/01/2022')
+
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl15_txtValue").send_keys("31/12/2022")
+
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl00").click() # Lancer le rapport
+
+    DRIVER.find_element(By.ID, "ReportViewer1").click()  # slectionner le rapport
+    
+    
+    
+
+    # time.sleep(2)  # Attendre 2 s
+    # try:
+    #     looping()
+    # except:
+    #     looping()
+    
+
+        
+    while True:
+        print('Chargement ...')
+       # print(DRIVER.find_element(By.ID,"ReportViewer1_AsyncWait_Wait").is_displayed())
+        DRIVER.find_element(By.ID, "ReportViewer1").click()  # slectionner le rapport
+        try:
+            if not DRIVER.find_element(By.ID,"ReportViewer1_AsyncWait_Wait").is_displayed():
+                print("click")
+                DRIVER.find_element(By.ID, "ReportViewer1_ctl05_ctl04_ctl00_Button").click()
+                #// *[ @ id = "ReportViewer1_ctl05_ctl04_ctl00_Menu"] / div[2]
+                time.sleep(10)  # Attendre 2 s
+
+                # ReportViewer1_ctl05_ctl04_ctl00
+                #//*[@id="ReportViewer1_ctl05_ctl04_ctl00_Menu"]/div[2]/a
+                DRIVER.find_element(By.XPATH,"//*[@id='ReportViewer1_ctl05_ctl04_ctl00_Menu']/div[2]/a").click()  # Exporter vers excel
+                break
+        except:
+            print(url,_max)
+            
+            acces_au_rapport(url,_max)
+"""
+
+    journal_de_production()
+
+def export_to_ex():
+    if not looping():
+        print("click")
+        DRIVER.find_element(By.ID, "ReportViewer1_ctl05_ctl04_ctl00_Button").click()
+        # // *[ @ id = "ReportViewer1_ctl05_ctl04_ctl00_Menu"] / div[2]
+        time.sleep(5)  # Attendre 2 s
+        DRIVER.find_element(By.XPATH,"//*[@id='ReportViewer1_ctl05_ctl04_ctl00_Menu']/div[2]/a").click()  # Exporter vers excel
+
+def looping():
+    while True:
+        print('Chargement ...')
+        # print(DRIVER.find_element(By.ID,"ReportViewer1_AsyncWait_Wait").is_displayed())
+        DRIVER.find_element(By.ID, "ReportViewer1").click()  # slectionner le rapport
+
+        if not DRIVER.find_element(By.ID, "ReportViewer1_AsyncWait_Wait").is_displayed():
+            
+
+            # ReportViewer1_ctl05_ctl04_ctl00
+            # //*[@id="ReportViewer1_ctl05_ctl04_ctl00_Menu"]/div[2]/a
+            # DRIVER.find_element(By.XPATH,"//*[@id='ReportViewer1_ctl05_ctl04_ctl00_Menu']/div[2]/a").click()  # Exporter vers excel
+            break
+    return False
+    # time.sleep(10)
+    # DRIVER.close()
+
+
+
+
+
+
+
+
+
+   # DRIVER.find_element(By.ID,"ReportViewer1_ctl05_ctl04_ctl00_Button").click()
+    #DRIVER.execute_script("$find('ReportViewer1').exportReport('EXCELOPENXML')")
+    #DRIVER.find_element(By.XPATH, "//*[@id='ReportViewer1_ctl05_ctl04_ctl00_Menu']/div[2]").click() # Exporter vers excel
+
+    CHARGEMENT_FINI = True
+
+    #time.sleep(100)  # Attendre 2 s
+
+    #time.sleep(5)
+    #
+   # DRIVER.find_element(By.ID,"item_7").click()
+    #DRIVER.find_element(By.XPATH,"//*[@id='805']/ul/li[7]/ul/li[5]/a/span").click()
+
+    # Point de vente
+
+    #
+
+def journal_de_production():
+
+    DRIVER.find_element(By.ID,"ReportViewer1_ctl04_ctl05").click() # cliquer sur list réseau
+    time.sleep(2)
+    #DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl05_divDropDown_ctl00").click() # deselection de tous les réseaux
+
+    
+    for i in range(8):
+        if i != 4:
+            DRIVER.find_element(By.ID, f"ReportViewer1_ctl04_ctl05_divDropDown_ctl0{i}").click() # selection Bureau Direct
+            time.sleep(1)
+
+    DRIVER.find_element(By.ID, "ReportViewer1").click()  # slectionner le rapport
+
+    try:
+       check_looping()
+    except:
+       check_looping()
+
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl17_txtValue").send_keys('22/09/2023')
+
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl19_txtValue").send_keys("22/09/2023")
+
+    time.sleep(2)
+    
+    DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl00").click() # Lancer le rapport
+
+    DRIVER.find_element(By.ID, "ReportViewer1").click()  # slectionner le rapport
+    
+    #DRIVER.find_element(By.ID, "ReportViewer1").click()  # slectionner le rapport
+
+    #DRIVER.find_element(By.ID, "ReportViewer1_ctl04_ctl05_divDropDown_ctl05").click() # selection Conseillers
+
+def check_looping():
+     if not (looping()):
+            DRIVER.find_element(By.ID,"ReportViewer1_ctl04_ctl07").click() # cliquer sur list réseau
+            for i in range(1,7):
+                if i != 5:
+                    DRIVER.find_element(By.ID, f"ReportViewer1_ctl04_ctl07_divDropDown_ctl0{i}").click() # selection Bureau Direct
+                    time.sleep(1)
+            DRIVER.find_element(By.ID, "ReportViewer1_ctl04").click()  # clicking ReportViewer
+
+def acces_via_athentification(url):
+
+    DRIVER.get(str(url))
+    DRIVER.find_element(By.ID,"txtUsername-inputEl").send_keys('geoffrey.kotoklo')
+
+    DRIVER.find_element(By.ID,"txtPassword-inputEl").send_keys("Nga$$*/diko*15")
+
+    DRIVER.find_element(By.ID,"btnLogin").click()
+
+    time.sleep(5)
+    #
+    DRIVER.find_element(By.ID,"item_7").click()
+    DRIVER.find_element(By.XPATH,"//*[@id='801']/ul/li[7]/ul/li[1]/a").click()
+
+
+
+#driver.find_elements()
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    DATE_EMISSION_DEBUT = str(date.today()).split("-")
+    DATE_EMISSION_DEBUT.reverse()
+    DATE_EMISSION_DEBUT = "/".join(DATE_EMISSION_DEBUT) 
+
+    DATE_EMISSION_FIN = str(date.today()).split("-")
+    DATE_EMISSION_FIN.reverse()
+    DATE_EMISSION_FIN = "/".join(DATE_EMISSION_FIN) 
+
+    #acces_via_athentification("https://ixperta-gb.groupensia.com")
+    #url = "https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=/Rapports/Rapports/Emissions/Polices%20%C3%A0%20Echeance&_dc=1684955527335"
+    #url="https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=%2fRapports%2fRapports%2fListing%2fListing+des+Emissions+Par+Garanties&_dc=1666187925546"
+    url="https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=%2fRapports%2fRapports%2fEmissions%2fJournal+de+Production&_dc=1695511494495"
+    acces_au_rapport(url,1,"Journal de production")
+    #print_hi('PyCharm')
+
+
+
+
+body = """\
+<!DOCTYPE html>
+    <html>
+        <head>
+            <link rel="stylesheet" type="text/css" hs-webfonts="true" href="https://fonts.googleapis.com/css?family=Lato|Lato:i,b,bi">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style type="text/css">
+                       .tg  {border-collapse:collapse;border-color:#aaa;border-spacing:0;border-style:solid;border-width:1px;}
+                        .tg td{background-color:#fff;border-color:#aaa;border-style:solid;border-width:0px;color:#333;
+                        font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg th{background-color:#f38630;border-color:#aaa;border-style:solid;border-width:0px;color:#fff;
+                        font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+                        .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+                        .tg .tg-0lax{text-align:left;vertical-align:top}
+                        .tg .tg-dg7a{background-color:#FCFBE3;text-align:left;vertical-align:top}
+                    </style>
+        </head>
+        <body bgcolor="#FFF" style="width: 100%; font-family:Lato, sans-serif; font-size:13px;">
+                <h3>RESUME IMPAYES PAR:</h3>
+            <h3>Poduit</h3>
+          <container style="overflow-x:auto;">
+          
+          <table class="tg">
+            <thead>
+              <tr class = "header">
+                <th class = "tg-0pky">Produit</th>
+                <th class = "tg-0lax">Encaissement</th>
+                <th class = "tg-0lax">Prime_TTC</th>
+                <th class = "tg-0lax">Taux_En</th>
+                <th class = "tg-0lax">Impayé</th>
+                <th class = "tg-0lax">Taux_Impayé</th>
+              </tr>
+            </thead>
+            <tbody>
+          
+          <tr>
+          <td class = "tg-dg7a">Automobile</td>
+          <td class = "tg-dg7a">1367917.0</td>
+          <td class = "tg-dg7a">8988960</td>
+          <td class = "tg-dg7a">15%</td>
+          <td class = "tg-dg7a">7621043</td>
+          <td class = "tg-dg7a">85%</td>
+          
+          </tr>
+          
+          <tr>
+          <td class = "tg-0lax">Nsia Voyage</td>
+          <td class = "tg-0lax">327043.0</td>
+          <td class = "tg-0lax">367888</td>
+          <td class = "tg-0lax">89%</td>
+          <td class = "tg-0lax">40845</td>
+          <td class = "tg-0lax">11%</td>
+          
+          </tr>
+          
+          <tr>
+          <td class = "tg-dg7a">RC Chef de Famille</td>
+          <td class = "tg-dg7a">0.0</td>
+          <td class = "tg-dg7a">16350</td>
+          <td class = "tg-dg7a">0%</td>
+          <td class = "tg-dg7a">16350</td>
+          <td class = "tg-dg7a">100%</td>
+          
+          </tr>
+          
+          <tr>
+          <td class = "tg-0lax">RC Entreprises Industrielles et Commerciales</td>
+          <td class = "tg-0lax">0.0</td>
+          <td class = "tg-0lax">201650</td>
+          <td class = "tg-0lax">0%</td>
+          <td class = "tg-0lax">201650</td>
+          <td class = "tg-0lax">100%</td>
+          
+          </tr>
+          
+            </tbody>
+            </table>
+          
+          
+          </container>
+          <br/>
+          <container>
+            <h3>Poduit</h3>
+            <div style="overflow-x:auto;">
+            
+            <table class="tg">
+              <thead>
+                <tr class = "header">
+                  <th class = "tg-0pky">Produit</th>
+                  <th class = "tg-0lax">Encaissement</th>
+                  <th class = "tg-0lax">Prime_TTC</th>
+                  <th class = "tg-0lax">Taux_En</th>
+                  <th class = "tg-0lax">Impayé</th>
+                  <th class = "tg-0lax">Taux_Impayé</th>
+                </tr>
+              </thead>
+              <tbody>
+            
+            <tr>
+            <td class = "tg-dg7a">Automobile</td>
+            <td class = "tg-dg7a">1367917.0</td>
+            <td class = "tg-dg7a">8988960</td>
+            <td class = "tg-dg7a">15%</td>
+            <td class = "tg-dg7a">7621043</td>
+            <td class = "tg-dg7a">85%</td>
+            
+            </tr>
+            
+            <tr>
+            <td class = "tg-0lax">Nsia Voyage</td>
+            <td class = "tg-0lax">327043.0</td>
+            <td class = "tg-0lax">367888</td>
+            <td class = "tg-0lax">89%</td>
+            <td class = "tg-0lax">40845</td>
+            <td class = "tg-0lax">11%</td>
+            
+            </tr>
+            
+            <tr>
+            <td class = "tg-dg7a">RC Chef de Famille</td>
+            <td class = "tg-dg7a">0.0</td>
+            <td class = "tg-dg7a">16350</td>
+            <td class = "tg-dg7a">0%</td>
+            <td class = "tg-dg7a">16350</td>
+            <td class = "tg-dg7a">100%</td>
+            
+            </tr>
+            
+            <tr>
+            <td class = "tg-0lax">RC Entreprises Industrielles et Commerciales</td>
+            <td class = "tg-0lax">0.0</td>
+            <td class = "tg-0lax">201650</td>
+            <td class = "tg-0lax">0%</td>
+            <td class = "tg-0lax">201650</td>
+            <td class = "tg-0lax">100%</td>
+            
+            </tr>
+            
+              </tbody>
+              </table>
+            
+            
+            </div>
+          </container>
+        </body>
+    </html>
+"""

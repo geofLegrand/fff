@@ -1,0 +1,36 @@
+---
+- name: Manage Windows
+  hosts:
+  tasks:
+  - name: Create directory structure
+    win_file:
+      path: c:\Temp\folder
+      state: directory
+
+  - name: Touch a file
+    win_file:
+      path: c:\Temp\folder\foo.txt
+      state: touch
+
+  - name: Obtain information about a file
+    win_state:
+      path: c:\Temp\folder\foo.txt
+      register: file_info
+
+  - name: Check file
+    debug:
+      var: file_info.stat.path
+
+  - name: Create a file form a Jinja2 template
+    win_template:
+      src: ./foo.txt.j2
+      dest: 'c:\Temp\folder\foo.txt'
+
+  - win_stat:
+      path: c:\Temp\folder\foo.txt
+      get_checksum: yes
+      checksum_algorithm: md5
+    register: md5_checksum
+
+  - debug:
+      var: md5_checksum.stat.checksum 

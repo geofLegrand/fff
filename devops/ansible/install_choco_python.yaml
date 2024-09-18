@@ -1,0 +1,16 @@
+---
+- name: Install Python on Windows Server via SSH
+  hosts: windows
+  tasks:
+    - name: Ensure Chocolatey is installed
+      win_chocolatey:
+        name: chocolatey
+        state: present
+
+    - name: Install Python using Chocolatey
+      win_chocolatey:
+        name: python
+        state: present
+
+    - name: Verify Python installation
+      win_shell: python --version

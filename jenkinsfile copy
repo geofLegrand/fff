@@ -1,0 +1,110 @@
+pipeline{
+    agent any
+
+    environment{
+        GITHUB_REPO_URL = 'https://github.com/geofLegrand/automate_mail.git'
+        CREDENTIAL_ID = 'github_pr'
+        CONFIG_YML_FILE = 'config.yaml'
+        YAML_FILE_FIELD = "label"
+        YAML_FILE_FIELD_VALUE = "DEMO"
+    }
+
+    stages{
+
+        stage("git checkout"){
+            steps{
+                script{
+                    //  echo "========executing A========"
+                     checkout([$class: 'GitSCM', branches: [[name: '*/dev'],[name: '*/release'],[name: '*/main']],
+                      doGenerateSubmoduleConfigurations: false,
+                        extensions: [[$class: 'LocalBranch']],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: GITHUB_REPO_URL, credentialsId: CREDENTIAL_ID]]])
+                    
+                }
+               
+            }
+    
+        }
+
+        stage("Install Dependencies"){
+            steps{
+                sh '''
+                    python3 -m venv env
+                    source env/bin/activate
+                    pip install --upgrade pip
+                    pip install pyinstaller
+                    pip install -r requirements.txt
+
+                '''
+            }
+            
+        }
+      stage('Verify PyInstaller') {
+            steps {
+                // Check if PyInstaller is installed and available
+                sh '''
+                source env/bin/activate
+                which pyinstaller
+                pyinstaller --version
+                '''
+            }
+        }
+
+        stage("Build to EXE"){
+            steps{
+                sh '''
+                    source env/bin/activate
+                    pyinstaller --onefile main.py
+                '''
+            }
+        }
+
+        stage("On Dev Branch"){
+            when{
+                expression {
+                    GIT_BRANCH = 'origin/' + sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+                    return (GIT_BRANCH == 'origin/dev') && isGitTag()
+                 
+                }
+            }
+            steps{
+
+                    sh "python3 file_treat/yaml_treat.py '${CONFIG_YML_FILE}' '${YAML_FILE_FIELD}' 'DEV' "
+         
+                
+            }
+        }
+                stage("On Main Branch"){
+            when{
+                expression {
+                    GIT_BRANCH = 'origin/' + sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+                    return (GIT_BRANCH == 'origin/main')
+                 
+                }
+            }
+            steps{
+
+                    sh "python3 file_treat/yaml_treat.py '${CONFIG_YML_FILE}' '${YAML_FILE_FIELD}' 'PROD' "
+         
+                
+            }
+        }
+        
+        // stage('Default for Other Branches') {
+        //     when {
+        //         not {
+        //             anyOf {
+        //                 branch 'develop'
+        //                 branch 'master'
+        //             }
+        //         }
+        //     }
+        //     steps {
+        //         echo "Running default steps for branch: ${env.BRANCH_NAME}"
+        //         // Add your default branch steps here
+        //     }
+        // }
+    }
+   
+}

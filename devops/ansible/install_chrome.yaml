@@ -1,0 +1,30 @@
+---
+- name: Install Google Chrome on Windows Server
+  hosts: windows
+  tasks:
+    - name: Create Temp directory for installer
+      win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Download Google Chrome installer
+      win_get_url:
+        url: https://dl.google.com/chrome/install/latest/chrome_installer.exe
+        dest: C:\Temp\chrome_installer.exe
+
+    - name: Install Google Chrome silently
+      win_shell: |
+        Start-Process -FilePath C:\Temp\chrome_installer.exe -ArgumentList '/silent /install' -Wait
+
+    - name: Remove Google Chrome installer
+      win_file:
+        path: C:\Temp\chrome_installer.exe
+        state: absent
+
+    - name: Verify Chrome installation
+      win_shell: |
+        if (Get-Command "C:\Program Files\Google\Chrome\Application\chrome.exe" -ErrorAction SilentlyContinue) {
+            Write-Output 'Google Chrome is installed.'
+        } else {
+            Write-Output 'Google Chrome installation failed.'
+        }

@@ -1,0 +1,90 @@
+content:
+  maildev:
+    cc:
+    - gessongue@gmail.com
+    to:
+    - gessongue@gmail.com
+  mailnotification:
+    cc: null
+    to:
+    - gessongue@gmail.com
+  mailprod:
+    cc:
+    - assane.diaw@nsiaassurances.com
+    - davy.manguende@nsiaassurances.com
+    - leon.renombo@nsiaassurances.com
+    - lionnel.mbelet@nsiaassurances.com
+    - daisy.mada@nsiaassurances.com
+    - prisca.mebale@nsiaassurances.com
+    - kevin.manami@nsiaassurances.com
+    - magalie.avome@nsiaassurances.com
+    - ines.wora@nsiaassurances.com
+    - jolin.doukaga@nsiaassurances.com
+    - juste.moumbangou@nsiaassurances.com
+    - severin.sanoukoue@nsiaassurances.com
+    to:
+    - juste.moumbangou@nsiaassurances.com
+  mouvement:
+    afn: Affaire nouvelle
+    anl: Annulation
+    atp: ATP
+    chi: Changement d'immatriculation
+    chv: "Changement de v\xC3\xA9hicule"
+    ema: Emission d'attestation
+    inc: Incorporation
+    mod: Modification
+    mog: Modification de garantie
+    ren: Renouvellement
+    res: Resiliation
+    rvig: Remise en vigueur
+    suc: SUC
+  pivot:
+  - Point Vente
+  - Produit
+  - Redacteur
+  - Mouvement
+  - Client
+  point_vente:
+    '2000': BUREAU DIRECT FRANGIPANIER
+    '2003': BUREAU DIRECT SIEGE
+    '2004': BUREAU DIRECT POG
+    '2005': BUREAU DIRECT PETIT PARIS
+    '2006': BUREAU DIRECT MOUILA
+    '2007': BUREAU DIRECT CAMPAGNE
+    '2008': BUREAU DIRECT AKANDA
+    '2009': BUREAU DIRECT MAKOKOU
+    '2010': BUREAU DIRECT OYEM
+    '3004': SAG
+    '3011': ROYAL ASSURANCES
+    '4000': AGENT MANDATAIRE
+    '5001': ECOBANK
+    '5004': BICIG
+    '5007': EDG
+  reseau:
+  - BUREAUX DIRECTS
+  url:
+  - bureau: BUREAUX DIRECTS
+    link: https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=%2fRapports%2fRapports%2fEmissions%2fJournal+de+Production&_dc=1695511494495
+    name: Journal de Production
+    type: '1'
+  - bureau: BUREAUX DIRECTS
+    link: https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=/Rapports/Rapports/Encaissements/Brouillard%20de%20Caisse&_dc=1695715310578
+    name: Brouillard de Caisse
+    type: '2'
+  urlsin:
+  - bureau: ALL
+    link: https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=%2fRapports%2fRapports%2fSinistres%2fSinistres+SAP+avec+Date+Arretee&_dc=1725213716663
+    name: Sinistre SAP
+    type: '1'
+  - bureau: ALL
+    link: https://ixperta-gb.groupensia.com/Views/PageControls/Vie/Reports/frmBaseReport.aspx?rapport=%2fRapports%2fRapports%2fSinistres_IARD%2fPrestation_Sinistre&_dc=1725214230638
+    name: "Sinistres Regl\xC3\xA9s"
+    type: '2'
+mod:
+  backupDir: C:/Users/gesso/SAVE_TEST/
+  dbPath: E:/DC/BD.json
+  label: PROD
+  readDir: C:/Users/gesso/Downloads
+  sender: geoffrey.kotoklo@nsiaassurances.com
+  smtpserver: smtp.office365.com
+param: config
